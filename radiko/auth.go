@@ -5,7 +5,6 @@ import (
     "strconv"
     "encoding/base64"
     "net/http"
-    //"os/exec"
 )
 
 const (
@@ -46,39 +45,3 @@ func Auth() string {
     }
     return token
 }
-
-/*
-func main() {
-    id := flag.String("id", "", "Station ID")
-    showIDs := flag.Bool("show-id", false, "Show all station id")
-    flag.Parse()
-    if *showIDs {
-        fmt.Println("Name\tID")
-        for _, s := range ParseStationIDPage().Stations {
-            fmt.Println(s.Name+"\t"+s.ID)
-        }
-    } else {
-        /*
-        cmd := exec.Command("ffplay", "-nodisp", "-i", "C:\\Users\\minom\\Downloads\\LoveStruck.mp3")
-        stdout, _ := cmd.StdoutPipe()
-        stderr, _ := cmd.StderrPipe()
-        buff_stdout := make([]byte, 1024)
-        buff_stderr := make([]byte, 1024)
-        var m int
-        cmd.Start()
-        for n, err := stdout.Read(buff_stdout); err != io.EOF; {
-            if 0 < n {
-                fmt.Print(string(buff_stdout[:n]))
-            }
-            if 0 < m {
-                fmt.Fprint(os.Stderr, string(buff_stderr[:m]))
-            }
-            n, err = stdout.Read(buff_stdout)
-            m, _ = stderr.Read(buff_stderr)
-        }
-        os.Exit(0)
-        token := Auth()
-        StartStream(*id, token)
-    }
-}
-*/

@@ -24,8 +24,8 @@ func (w *Widgets) SetStationData(stations []radiko.StationInfo) {
                 w.currentPlayer.Stop()
             }
             w.currentPlayer = radiko.Stream{
-                ID:    station.ID,
-                Token: radiko.Auth(),
+                ID:        station.ID,
+                Token:     radiko.Auth(),
             }
             go w.currentPlayer.StartStream(w.App, w.InfoView)
             w.nowPlaying = true

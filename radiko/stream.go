@@ -3,7 +3,6 @@ package radiko
 import (
     "fmt"
     "os"
-    "time"
     "syscall"
     "os/exec"
     "os/signal"
@@ -14,7 +13,7 @@ type Stream struct {
     ID        string
     Token     string
     Player    *exec.Cmd
-    Canceller chan struct{}
+    Cancel bool
 }
 
 type output struct {
@@ -46,28 +45,19 @@ func (s *Stream) StartStream(app *tview.Application, view *tview.TextView) {
     s.Player.Start()
     defer s.Player.Wait()
     defer s.Stop()
-    s.Canceller = make(chan struct{})
-    go func(s Stream) {
-        trap := make(chan os.Signal, 1)
-        signal.Notify(trap, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
-        for {
-            select {
-            case <-trap:
-                s.Stop()
-                os.Exit(0)
-            case <-s.Canceller:
-                return
-            }
-        }
-    }(*s)
+    trap := make(chan os.Signal, 1)
+    signal.Notify(trap, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
     for {
-        time.Sleep(time.Minute * 60)
+        if s.Cancel {
+            s.Cancel = false
+            return
+        }
     }
 }
 
-func (s Stream) Stop() {
+func (s *Stream) Stop() {
     if s.Player != nil {
         s.Player.Process.Kill()
-        close(s.Canceller)
+        s.Cancel = true
     }
 }

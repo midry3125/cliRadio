@@ -1,39 +1,41 @@
 package radiko
 
 import (
+    "fmt"
+    "log"
+    "time"
     "encoding/xml"
+    "github.com/rivo/tview"
+)
+
+const (
+    programUrl string = "https://radiko.jp/v3/program/station/date/%s/%s.xml"
 )
 
 type Programs struct {
-    ID    string
-    Extra map[string]string
+    XMLName  xml.Name      `xml:"radiko"`
+    Programs []ProgramInfo `xml:"stations>station>progs>prog"`
+    Day     int
 }
 
-func (p *Programs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-    p.Extra = make(map[string]string)
-    for _, attr := range start.Attr {
-        if attr.Name.Local == "id" {
-            p.ID = attr.Value
-        }
-    }
-    for {
-        token, err := d.Token()
-        if token == nil {
-            break
-        }
-        if err != nil {
-            return err
-        }
-        if t, ok := token.(xml.StartElement); ok {
-            var data string
-            if err := d.DecodeElement(&data, &t); err != nil {
-                return err
-            }
-            p.Extra[t.Name.Local] = data
-        }
-    }
-    return nil
+type ProgramInfo struct {
+    XMLName  xml.Name `xml:"prog"`
+    Start    int      `xml:"ftl,attr"`
+    End      int      `xml:"tol,attr"`
+    Title    string   `xml:"title"`
 }
 
-func GetPrograms(area, station string) {
+func GetPrograms(station string, app *tview.Application) *Programs {
+    res, err := GetResponse(fmt.Sprintf(programUrl, time.Now().Format("20060102"), station))
+    if err != nil {
+        app.Stop()
+        log.Fatal(err)
+    }
+    p := Programs{Day: time.Now().Day()}
+    err = xml.Unmarshal(res, &p)
+    if err != nil {
+        app.Stop()
+        log.Fatal(err)
+    }
+    return &p
 }

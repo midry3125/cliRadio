@@ -39,7 +39,7 @@ func GetResponse(url string) (response []byte, err error) {
     return response, nil
 }
 
-func ParseStationIDPage() ([]StationInfo, string) {
+func ParseStationIDPage() []StationInfo {
     res, err := GetResponse(areaUrl)
     if err != nil {
         log.Fatal(err)
@@ -49,10 +49,10 @@ func ParseStationIDPage() ([]StationInfo, string) {
     if err != nil {
         log.Fatal(err)
     }
-    var stations Stations
-    err = xml.Unmarshal(res, &stations)
+    var s Stations
+    err = xml.Unmarshal(res, &s)
     if err != nil {
         log.Fatal(err)
     }
-    return stations.Stations, areaCode
+    return s.Stations
 }

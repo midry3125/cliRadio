@@ -72,16 +72,29 @@ func (w *Widgets) UpdatePrograms(id string, app *tview.Application) {
     w.ProgramTable.Clear()
     for _, p := range w.Programs.Programs {
         start := strconv.Itoa(p.Start)
+        switch len(start) {
+        case 3:
+            start = start[:1]+":"+start[1:]
+        case 4:
+            start = start[:2]+":"+start[2:]
+        }
         end := strconv.Itoa(p.End)
-        w.ProgramTable.AddItem(p.Title, fmt.Sprintf("↑ : %s:%s～%s:%s", start[:2], start[2:], end[:2], end[2:]), 0, func(){})
+        switch len(end) {
+        case 3:
+            end = end[:1]+":"+end[1:]
+        case 4:
+            end = end[:2]+":"+end[2:]
+        }
+        w.ProgramTable.AddItem(p.Title, fmt.Sprintf("↑ %s～%s", start, end), 0, func(){})
     }
 }
 
 func (w *Widgets) UpdateNowProgram(id string, app *tview.Application) {
     index := -1
     now := time.Now()
+    now_h := now.Hour()
     hours, _ := strconv.Atoi(now.Format("1504"))
-    if w.Programs.Day != now.Day() {
+    if (w.Programs.Day != now.Day()) || (0 <= now_h && now_h <= 6) {
         hours += 2400
     }
     for n, p := range w.Programs.Programs {

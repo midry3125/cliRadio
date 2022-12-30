@@ -114,7 +114,7 @@ func createApp() Widgets {
     layout := tview.NewFlex().
                     SetDirection(tview.FlexRow)
     layout.SetBorder(true).
-           SetTitle(" Ctrl+S: Move to stations list  Ctrl+T: Move to mail form ")
+           SetTitle(" Enter Ctrl+C to exit ")
     layout.AddItem(stationList, 0, 1, true).
            AddItem(progTable, 0, 2, false)
     pages.AddPage("main", layout, true, true)

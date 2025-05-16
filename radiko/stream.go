@@ -17,7 +17,7 @@ type Stream struct {
 }
 
 func (s *Stream) StartStream(app *tview.Application, updateProgs func()) {
-    url := fmt.Sprintf("https://si-f-radiko.smartstream.ne.jp/so/playlist.m3u8?station_id=%s&l=15&lsid=27bc2ff61afcd9d30da1be25a4731e14&type=b", s.ID)
+    url := fmt.Sprintf("https://f-radiko.smartstream.ne.jp/%s/_definst_/simul-stream.stream/playlist.m3u8", s.ID)
     _, err := exec.LookPath("ffplay")
     if err != nil {
         app.Stop()
@@ -29,8 +29,8 @@ func (s *Stream) StartStream(app *tview.Application, updateProgs func()) {
         "-nodisp",
         "-vn",
         "-headers",
-        "X-Radiko-AuthToken: "+s.Token,
-        "-i", url,
+        fmt.Sprintf("X-Radiko-AuthToken: %s", s.Token),
+        url,
     )
     s.Player.Start()
     defer s.Player.Wait()
